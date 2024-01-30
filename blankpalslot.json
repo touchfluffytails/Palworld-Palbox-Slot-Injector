@@ -1,0 +1,79 @@
+{
+  "IndividualId": {
+    "struct_type": "PalInstanceID",
+    "struct_id": "00000000-0000-0000-0000-000000000000",
+    "id": null,
+    "value": {
+      "PlayerUId": {
+        "struct_type": "Guid",
+        "struct_id": "00000000-0000-0000-0000-000000000000",
+        "id": null,
+        "value": "00000000-0000-0000-0000-000000000000",
+        "type": "StructProperty"
+      },
+      "InstanceId": {
+        "struct_type": "Guid",
+        "struct_id": "00000000-0000-0000-0000-000000000000",
+        "id": null,
+        "value": "00000000-0000-0000-0000-000000000000",
+        "type": "StructProperty"
+      },
+      "DebugName": {
+        "id": null,
+        "value": "",
+        "type": "StrProperty"
+      }
+    },
+    "type": "StructProperty"
+  },
+  "PermissionTribeID": {
+    "id": null,
+    "value": {
+      "type": "EPalTribeID",
+      "value": "None"
+    },
+    "type": "EnumProperty"
+  },
+  "RawData": {
+    "array_type": "ByteProperty",
+    "id": null,
+    "value": {
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "type": "ArrayProperty"
+  }
+}
