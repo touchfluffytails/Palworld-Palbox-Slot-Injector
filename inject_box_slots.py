@@ -26,6 +26,10 @@ def main(levelSavePath, boxcount, boxSlotCount, runningPath):
     for file in glob.glob(os.path.join(playersFolder, "*.json")):
         playerSaves.append(file)
     print("{count} players with json dumped for this world".format(count=len(playerSaves)))
+    if (len(playerSaves) == 0):
+        print("No player .sav.json found to inject slots into")
+        print("{count} player saves found that haven't been dumped with the save tool".format(count=GetPlayerSaveCount(playersFolder)))
+        quit()
 
     print("Getting player pal boxes...")
     playerPalBoxes = []
@@ -73,6 +77,10 @@ def main(levelSavePath, boxcount, boxSlotCount, runningPath):
 
     print("")
     print("Pal box slots injected into {count} player pal boxes".format(count=len(playerSaves)))
+
+def GetPlayerSaveCount(playersFolder):
+    playerSaves = glob.glob(os.path.join(playersFolder, "*.sav"))
+    return len(playerSaves)
 
 def CreateDefaultConfig(configPath):
     config = configparser.ConfigParser()
