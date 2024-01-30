@@ -35,7 +35,7 @@ def main(levelSavePath, boxcount, boxSlotCount, runningPath):
     playerPalBoxes = []
     for player in playerSaves:
         save = {}
-        with open(player, "r") as file:
+        with open(player, "r", encoding="utf-8") as file:
             save = json.load(file)
             containerId = save["properties"]["SaveData"]["value"]["PalStorageContainerId"]["value"]["ID"]["value"]
             playerPalBoxes.append(containerId)
@@ -43,13 +43,13 @@ def main(levelSavePath, boxcount, boxSlotCount, runningPath):
     print("Getting blank slot template...")
     blankSlot = {}
     blankPath = os.path.join(runningPath, BLANK_SLOT_FILENAME)
-    with open(blankPath, "r") as file:
+    with open(blankPath, "r", encoding="utf-8") as file:
         blankSlot = json.load(file)
     print("Loaded following file as blank slot template: {path}".format(path=blankPath))
 
     print("Loading level save...")
     levelSave = {}
-    with open(levelSavePath, "r") as file:
+    with open(levelSavePath, "r", encoding="utf-8") as file:
         levelSave = json.load(file)
     levelContainers = levelSave["properties"]["worldSaveData"]["value"]["CharacterContainerSaveData"]["value"]
 
@@ -72,7 +72,7 @@ def main(levelSavePath, boxcount, boxSlotCount, runningPath):
     shutil.move(levelSavePath, newPath)
     
     print("Dumping new level.sav.json...")
-    with open(levelSavePath, "w") as file:
+    with open(levelSavePath, "w", encoding="utf-8") as file:
         json.dump(levelSave, file)
 
     print("")
@@ -88,7 +88,7 @@ def CreateDefaultConfig(configPath):
     # default game values
     config.set(ConfigSection, "boxcount", "16")
     config.set(ConfigSection, "boxslotcount", "30")
-    with open(configPath, 'w') as file:
+    with open(configPath, 'w', encoding="utf-8") as file:
         config.write(file)
 
 if __name__ == "__main__":
