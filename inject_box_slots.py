@@ -5,6 +5,7 @@ import configparser
 import glob
 from datetime import datetime
 import shutil
+import argparse
 
 CONFIG_FILENAME = "config.ini"
 BLANK_SLOT_FILENAME = "blankpalslot.json"
@@ -93,14 +94,30 @@ def CreateDefaultConfig(configPath):
 
 if __name__ == "__main__":
     print("")
-    if (len(sys.argv) <= 1):
-        print("Not provided level.sav.json")
-        quit()
 
-    levelSavePath = sys.argv[1]
+    parser = argparse.ArgumentParser(
+        prog="Palbox Slot Injector",
+        description="Injects slots into existing players palbox")
+    parser.add_argument("level", metavar="Level.sav.json")
+    args = parser.parse_args()
+
+    levelSavePath = args.level
+
     if (not os.path.exists(levelSavePath)):
         print("Level.sav.json doesn't exist: {path}".format(path=levelSavePath))
         quit()
+
+    levelName, levelExtension = os.path.splitext(levelSavePath)
+    if (levelExtension.upper() == ".sav".upper()):
+        print("Must be passed Level.sav.json, not Level.sav")
+        print("Please ensure you have ran Level.sav through Palword-Save-Tools")
+        print("Was passed file: {path}".format(path=levelSavePath))
+        quit()
+    elif (levelExtension.upper() != ".json".upper()):
+        print("Not passed a valid file")
+        print("Was passed file: {path}".format(path=levelSavePath))
+        quit()
+
     print("Working on Level.sav.json from: {path}".format(path=levelSavePath))
 
     runningPath = os.path.dirname(os.path.realpath(__file__))

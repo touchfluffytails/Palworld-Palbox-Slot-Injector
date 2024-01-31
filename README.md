@@ -18,6 +18,9 @@ Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/
 4. Drag your "Level.sav.json" onto the "inject_box_slots.cmd" or command line it  
 - Must be "**Level.sav.json**" not "Level.sav"  
 5. Install a mod like previously stated "Bigger and Reorganized PalBox" to allow displaying of the new box slots  
+- Modify the "main.lua" that comes from "Bigger and Reorganized PalBox" so that  
+- - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" in "config.ini"  
+- - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount" in "config.ini"
 
 It will automatically read player .sav.json's in the Players folder to find their palbox guid and inject box slots to the required amount  
 
