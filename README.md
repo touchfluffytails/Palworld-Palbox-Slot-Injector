@@ -4,7 +4,7 @@ Injects slots into existing players palboxes. Allows you to increase the amount 
 Works alongside a mod like: https://www.nexusmods.com/palworld/mods/68  
 You can edit the main.lua script this mod comes with to edit the box count and slot sizes  
 
-Game appears to work by having slots be an ordered array containing box slots in a contiguous order. How many slots you have is based on box count * slots per box. Based on these parameters, you can just inject new slots to the save based on your desired box count and slots per boxes setup in a mod like the previously listed.  
+How this works is under the how to use and notes  
 
 **Tools needed:**  
 Python installed  
@@ -34,3 +34,20 @@ If Palworld updates this may prevent you from running dedicated with mods and th
 
 **Notes:**  
 I am unaware of what possible issues this could cause so use with caution and awareness this may break something and be irreversible. It already backups level.sav.json but be sure to do it yourself.  
+
+**How this works**  
+Game appears to work by having slots be an ordered array containing box slots in a contiguous order. How many slots you have is based on box count * slots per box. Based on these parameters, you can just inject new slots to the save based on your desired box count and slots per boxes setup in a mod like the previously listed.  
+
+More technical explanation for those who want to expand this making something not as crappy:  
+
+In each player saves, under the property "PalStorageContainerId", players are assigned a GUID that relates to a "PalCharacterSlotSaveData" object. This object resides inside the Lavel.sav "worldSaveData" -> "CharacterContainerSaveData". I'm not sure what the purpose of the non-player ones in here are but every player will have their palbox as one of the objects in its value array. Inside the containers "Slots" Property will be an array of box slots. The game internally just stores palbox slots as a single array and on the UI side it handles how to distribute them out to boxes.  
+
+Pals are stored in savs in "CharacterSaveParameterMap" property. Each pal has a SlotID property and this assigns them a ContainerId(The palbox) and then a SlotIndex. The SlotIndex from my quick play just points them to the absolute position on the box stack so the UI can determine which box they get visually represented with.  
+
+With this, you can increase slots per box by more than 30 (it does display this correctly with a scroll bar) and it won't have any issues. I didn't test it myself but if you increase amount of slots in a box it means the pals should be pushed up the visual stack so those on box 2 will show up on box 1 now etc.
+
+You can do things like having a single slot only existing but 30 boxes. In this situation, the container array will only have a single entry. So visually, you will see the first box having a single slot and the rest having none. Likewise, you can having the final box be cutoff short on its slot count by assigning a bit of objects to the container array.
+
+TL;DR:
+Save holds how many potential box slots a player can have, the game itself (or the bigger palbox mod) determines how many slots the UI will actually display to access. If the save holds less slots than attempting to display, it will just show the missing as unaccessable (More testing should be done here to ensure it won't attempt to access things that don't exist). If the save holds more than the UI is told to display, it will simply not display them (More testing here should be done to check if this could cause save corruption).
+![SaveExplanation](readme_data/palbox_sav_explanation.png)
