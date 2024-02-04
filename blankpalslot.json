@@ -30,7 +30,7 @@
     "id": null,
     "value": {
       "type": "EPalTribeID",
-      "value": "None"
+      "value": "EPalTribeID::RobinHood"
     },
     "type": "EnumProperty"
   },
@@ -38,42 +38,11 @@
     "array_type": "ByteProperty",
     "id": null,
     "value": {
-      "values": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+      "player_uid": "00000000-0000-0000-0000-000000000000",
+      "instance_id": "00000000-0000-0000-0000-000000000000",
+      "permission_tribe_id": 0
     },
-    "type": "ArrayProperty"
+    "type": "ArrayProperty",
+    "custom_type": ".worldSaveData.CharacterContainerSaveData.Value.Slots.Slots.RawData"
   }
 }

@@ -2,6 +2,6 @@
 
 cd /D "%~dp0"
 
-python inject_box_slots.py %~1
+python inject_box_slots.py -ui
 
 pause

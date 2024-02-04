@@ -11,16 +11,17 @@ Python installed
 Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/  
 
 **How to use:**  
-1. Run "Palworld-Save-Tools" against "Level.sav" to get "Level.sav.json" in the directory  
-2. In save "Players" folder, run "Palworld-Save-Tools" against all player .sav so that you have x.sav.json  
-- eg. "00000000000000000000000000000001.sav" -> "00000000000000000000000000000001.sav.json"  
-3. In "config.ini" in script folder, modify "boxcount" number to desired box number and "boxslotcount" to desired slots per box  
-4. Drag your "Level.sav.json" onto the "inject_box_slots.cmd" or command line it  
-- Must be "**Level.sav.json**" not "Level.sav"  
+1. Run "inject_box_slots.cmd"
+2. Select your "level.sav[.json]"" in the file picker
+3. Select the save-tools "convert.cmd" in the file picker
+4. Input desired "box count" and "box slot count" into the text boxes
 5. Install a mod like previously stated "Bigger and Reorganized PalBox" to allow displaying of the new box slots  
 - Modify the "main.lua" that comes from "Bigger and Reorganized PalBox" so that  
 - - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" in "config.ini"  
 - - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount" in "config.ini"
+
+Console:
+Has support for running through console without ui if you want to do that. Just -h to figure it out. 
 
 It will automatically read player .sav.json's in the Players folder to find their palbox guid and inject box slots to the required amount  
 
