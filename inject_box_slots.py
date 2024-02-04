@@ -51,7 +51,7 @@ def main():
     dumpPlayers = not args.dontdumpplayers
 
     #default game values
-    boxCount = 30
+    boxCount = 16
     boxSlotCount = 30
 
     if (not ValidateArguments(args)):
@@ -206,7 +206,10 @@ def MurderPalBox(container, palbox, desiredSlotCount, idiotAnswered, idiot):
         else:
             result = HandleYesNoConsole("You are asking to reduce box of size {boxsize} down to size {newsize}. Are you SURE you want to do this?\nThis will delete the contents of the reduced slots.".format(boxsize=len(palbox), newsize=desiredSlotCount))
             if (result and not idiotAnswered):
+                HandleYesNoConsole("You sure?")
+            if (result and not idiotAnswered):
                 idiot = HandleYesNoConsole("Do you want to apply this to all player boxes?")
+                idiotAnswered = True
     else:
         result = True
     if (result):
@@ -257,41 +260,30 @@ def ValidateArguments(args):
     return True
 
 def HandleSetupUI(levelSavePath, savetools, passedBoxCount, passedBoxSlotCount):
-    boxCount = 0
-    boxSlotCount = 0
+    boxCount = 16
+    boxSlotCount = 30
 
-    if (levelSavePath == None or levelSavePath == "" or not os.path.exists(levelSavePath)):
-        levelFileDialog = injectorui.LevelFileDialog()
-        levelSavePath = levelFileDialog.GetPath()
-        if (levelSavePath == None or levelSavePath == "" or levelSavePath == False):
-            print("")
-            print("You must select a level save path")
-            print("")
-            raise Exception("User did not select a level save")
+    if (levelSavePath == None):
+        levelSavePath = ""
+    if (savetools == None):
+        savetools = ""
+    if (passedBoxCount == None):
+        passedBoxCount = 16
+    if (passedBoxSlotCount == None):
+        passedBoxSlotCount = 30
 
-    if (savetools == None or savetools == "" or not os.path.exists(savetools)):
-        savetoolsFileDialog = injectorui.SaveToolsCmd()
-        savetools = savetoolsFileDialog.GetPath()
-        if (savetools == None or savetools == "" or savetools == False):
-            print("")
-            print("You must select savetools path")
-            print("")
-            raise Exception("User did not select savetools path")
 
-    if (passedBoxCount == None or passedBoxCount == 0 or passedBoxSlotCount == None or passedBoxSlotCount == 0):
-        settingInput = injectorui.SettingsInput()
-        settingInput.OpenDialog()
-        boxCount = settingInput.GetBoxCount()
-        boxSlotCount = settingInput.GetBoxSlotCount()
-        if (boxCount == None or boxCount == 0 or boxCount == False or boxSlotCount == None or boxSlotCount == 0 or boxSlotCount == False):
-                print("")
-                print("You must provid a valid positive number for both box slot and box slot count")
-                if (boxCount != None and boxCount != 0 and boxCount != False):
-                    print("Box count set: {value}".format(value=boxCount))
-                if (boxSlotCount != None and boxSlotCount != 0 and boxSlotCount != False):
-                    print("Box slot count set: {value}".format(value=boxSlotCount))
-                print("")
-                raise Exception("User did not input valid box setting values")
+    injectorForm = injectorui.InjectorForm(passedBoxCount, passedBoxSlotCount, levelSavePath, savetools)
+
+    if (not injectorForm.Result()):
+        print("User cancelled settings ui. Closing...")
+        print("")
+        raise Exception("Cancelled settings ui")
+
+    levelSavePath = injectorForm.GetLevelPath()
+    savetools = injectorForm.GetSaveToolsPath()
+    boxCount = injectorForm.GetBoxCount()
+    boxSlotCount = injectorForm.GetBoxSlotCount()
 
     return levelSavePath, savetools, boxCount, boxSlotCount
 

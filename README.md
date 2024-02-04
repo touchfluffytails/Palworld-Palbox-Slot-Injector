@@ -12,10 +12,8 @@ Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/
 
 **How to use:**  
 1. Run "inject_box_slots.cmd"
-2. Select your "level.sav[.json]"" in the file picker
-3. Select the save-tools "convert.cmd" in the file picker
-4. Input desired "box count" and "box slot count" into the text boxes
-5. Install a mod like previously stated "Bigger and Reorganized PalBox" to allow displaying of the new box slots  
+2. Fill out the fields with the required data and the rest will be automated. Anything that isn't will prompt you
+3. Install a mod like previously stated "Bigger and Reorganized PalBox" to allow displaying of the new box slots  
 - Modify the "main.lua" that comes from "Bigger and Reorganized PalBox" so that  
 - - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" in "config.ini"  
 - - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount" in "config.ini"
