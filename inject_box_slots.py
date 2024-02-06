@@ -316,7 +316,7 @@ def RunSaveTools(savetools, savePath, validateJsonExistence = True):
 
     print("Running save-tools on {path}".format(path=savePath))
     print("")
-    result = subprocess.run([PythonPath, savetools, savePath, "--force"])
+    result = subprocess.run([PythonPath, savetools, savePath, "--force", "--minify-json"])
     print("")
     if (result.returncode == 1):
         print("Error while running save-tools on {path}".format(path=savePath))
