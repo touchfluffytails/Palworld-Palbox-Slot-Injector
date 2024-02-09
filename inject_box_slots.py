@@ -27,6 +27,12 @@ if (PythonPath == None or PythonPath == "" or not os.path.exists(PythonPath)):
     # just default to python command in this case. If this doesn't work, I'm going to assume the user has some weird setup (likely linux) and I'm not providing support
     PythonPath = "python"
 
+def quit(reason = ""):
+    '''
+    Prints exit message, accepts string or list of strings(one per line)
+    '''
+    sys.exit(reason)
+
 def main():
     print("")
 
