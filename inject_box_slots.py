@@ -32,6 +32,8 @@ class InjectBoxSlots:
     def __init__(self):
         self.OpenUi = False
         self.application_path = ""
+        appdata_dir = os.getenv('LOCALAPPDATA')
+        self.save_path = os.path.join(appdata_dir, "Pal\\Saved\\SaveGames")
 
     def main(self):
         print("")
@@ -254,7 +256,7 @@ class InjectBoxSlots:
         boxSlotCount = 30
 
         if (levelSavePath == None):
-            levelSavePath = ""
+            levelSavePath = self.save_path
         if (passedBoxCount == None):
             passedBoxCount = 16
         if (passedBoxSlotCount == None):
