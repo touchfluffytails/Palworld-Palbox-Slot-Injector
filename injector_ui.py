@@ -6,6 +6,7 @@ import os
 class InjectorForm:
     def __init__(self, boxcount = 16, boxslotcount = 30, levelpath = ""):
         self.root = tk.Tk()
+        self.root.title("Palbox Slot Injector")
         self.settings = self.SettingsInput(self.root, boxcount, boxslotcount, levelpath)
         self.root.mainloop()
 
