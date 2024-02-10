@@ -1,11 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+import shutil
 
 a = Analysis(
     ['inject_box_slots.py'],
     pathex=[],
     binaries=[],
-    datas=[('blankpalslot.json', '.')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,3 +35,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
+shutil.copyfile('blankpalslot.json', '{0}/blankpalslot.json'.format(DISTPATH))
