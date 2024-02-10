@@ -1,7 +1,6 @@
 import sys
 import json
 import os
-import psutil
 import configparser
 import glob
 from datetime import datetime
