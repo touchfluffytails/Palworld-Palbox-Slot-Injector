@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import psutil
 import configparser
 import glob
 from datetime import datetime
@@ -26,10 +27,12 @@ def quit(reason = ""):
     '''
     Prints exit message, accepts string or list of strings(one per line)
     '''
+    #input("Paused for debug purposes...")
     sys.exit(reason)
 class InjectBoxSlots:
     def __init__(self):
         self.OpenUi = False
+        self.application_path = ""
 
     def main(self):
         print("")
@@ -55,8 +58,7 @@ class InjectBoxSlots:
         boxSlotCount = 30
 
         if (not self.ValidateArguments(args)):
-            print("Exiting, must pass all required arguments")
-            quit()
+            quit("Exiting, must pass all required arguments")
 
         if (self.OpenUi):
             print("Running ui mode")
@@ -71,27 +73,23 @@ class InjectBoxSlots:
         print("Box Slot Count: {value}".format(value=boxSlotCount))
 
         if (not os.path.exists(levelSavePath)):
-            print("Level.sav[.json] doesn't exist: {path}".format(path=levelSavePath))
-            quit()
+            quit("Level.sav[.json] doesn't exist: {path}".format(path=levelSavePath))
 
         levelName, levelExtension = os.path.splitext(levelSavePath)
 
         if (levelExtension.upper() not in [".sav".upper(), ".json".upper()]):
-            print("Not passed a valid file. Must be a *.sav or *.sav.json")
-            print("Was passed file: {path}".format(path=levelSavePath))
-            quit()
+            quit("Not passed a valid file. Must be a *.sav or *.sav.json\nWas passed file: {path}".format(path=levelSavePath))
 
         levelSavePath = self.HandleSaveTools(levelSavePath, dumpPlayers)
 
         print("Working on Level.sav.json from: {path}".format(path=levelSavePath))
 
-        runningPath = os.path.dirname(os.path.realpath(__file__))
-        print("Opened script at: {path}".format(path=runningPath))
+        print("Opened script at: {path}".format(path=self.application_path))
 
         print("Configured Pal box count: {count}".format(count=boxCount))
         print("Configured Pal box slot count: {count}".format(count=boxSlotCount))
 
-        self.InjectBoxes(levelSavePath, boxCount, boxSlotCount, runningPath)
+        self.InjectBoxes(levelSavePath, boxCount, boxSlotCount)
 
         result = False
         if (self.OpenUi):
@@ -105,7 +103,7 @@ class InjectBoxSlots:
             print("Not merging changes back into Level.sav")
 
 
-    def InjectBoxes(self, levelSavePath, boxcount, boxSlotCount, runningPath):
+    def InjectBoxes(self, levelSavePath, boxcount, boxSlotCount):
         saveFolder = os.path.split(levelSavePath)[0]
         playersFolder = os.path.join(saveFolder, PlayerFolder)
 
@@ -118,9 +116,7 @@ class InjectBoxSlots:
             playerSaves.append(file)
         print("{count} players with json dumped for this world".format(count=len(playerSaves)))
         if (len(playerSaves) == 0):
-            print("No player .sav.json found to inject slots into")
-            print("{count} player saves found that haven't been dumped with the save tool".format(count=self.GetPlayerSaveCount(playersFolder)))
-            quit()
+            quit("No player .sav.json found to inject slots into\n{count} player saves found that haven't been dumped with the save tool".format(count=self.GetPlayerSaveCount(playersFolder)))
 
         print("Getting player pal boxes...")
         playerPalBoxes = []
@@ -133,7 +129,7 @@ class InjectBoxSlots:
 
         print("Getting blank slot template...")
         blankSlot = {}
-        blankPath = os.path.join(runningPath, BLANK_SLOT_FILENAME)
+        blankPath = os.path.join(self.application_path, BLANK_SLOT_FILENAME)
         with open(blankPath, "r", encoding="utf-8") as file:
             blankSlot = json.load(file)
         print("Loaded following file as blank slot template: {path}".format(path=blankPath))
@@ -229,7 +225,15 @@ class InjectBoxSlots:
             config.write(file)
 
     def ValidateArguments(self, args):
-        if (args.ui):
+        #check if running as exe
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and not args.ui:
+            #running as bundle(exe)
+            self.OpenUi = True
+            self.application_path = os.path.dirname(sys.executable)
+        else:
+            self.application_path = os.path.dirname(__file__)
+
+        if (self.OpenUi):
             # Literally doesn't matter in this case
             # If its been passed we'll use it and validate otherwise we will prompt
             return True
@@ -261,9 +265,8 @@ class InjectBoxSlots:
         injectorForm = injectorui.InjectorForm(passedBoxCount, passedBoxSlotCount, levelSavePath)
 
         if (not injectorForm.Result()):
-            print("User cancelled settings ui. Closing...")
-            print("")
-            raise Exception("Cancelled settings ui")
+            #Exit gracefully with no error if user closes window
+            quit("User cancelled settings ui. Closing...")
 
         levelSavePath = injectorForm.GetLevelPath()
         boxCount = injectorForm.GetBoxCount()
