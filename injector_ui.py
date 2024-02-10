@@ -25,6 +25,7 @@ class InjectorForm:
     class SettingsInput:
         def __init__(self, root, boxcount = 16, boxslotcount = 30, levelpath = ""):
             self.root = root
+            self.levelpath = levelpath
 
             self.boxcount = tk.IntVar()
             self.boxcount.set(boxcount)
@@ -45,7 +46,7 @@ class InjectorForm:
 
         def ConstructForm(self):
             self.root.geometry("450x125")
-
+            
             vcmdBoxSlotCount = (self.root.register(self.Validate_txbBoxSlotCount),  "%P", "%V")
             self.lblBoxSlotCount = tk.Label(self.root, text = "Box Slot Count:", width = 15)
             self.txbBoxSlotCount = tk.Entry(self.root, width = 10, textvariable=self.boxslotcount, validate="all", validatecommand=vcmdBoxSlotCount)
@@ -113,7 +114,7 @@ class InjectorForm:
             self.result = True
 
         def btnLevelPath_Click(self):
-            levelFileDialog = self.LevelFileDialog(parent=self.root)
+            levelFileDialog = self.LevelFileDialog(parent=self.root,levelStartPath=self.levelpath.get())
             levelPath = levelFileDialog.GetPath()
             self.levelpath.set(levelPath)
 
@@ -222,9 +223,9 @@ class InjectorForm:
             return self.result
 
         class LevelFileDialog:
-            def __init__(self, parent):
+            def __init__(self, parent, levelStartPath):
                 validFileTypes = (("Valid files", "*.sav *.sav.json"),(".sav", "*.sav"), (".sav.json", "*.sav.json"), ("All Files", "*.*"))
-                self.path = filedialog.askopenfilename(filetypes=validFileTypes, title="Open Palworld Level.sav[.json] Save", parent=parent)
+                self.path = filedialog.askopenfilename(filetypes=validFileTypes, title="Open Palworld Level.sav[.json] Save", initialdir=levelStartPath, parent=parent)
 
             def GetPath(self):
                 return self.path
