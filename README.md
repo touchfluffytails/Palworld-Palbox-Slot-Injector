@@ -10,13 +10,32 @@ How this works is under the how to use and notes
 Python installed  
 Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/  
 
-**How to use:**  
-1. Run "inject_box_slots.cmd"
-2. Fill out the fields with the required data and the rest will be automated. Anything that isn't will prompt you
-3. Install a mod like previously stated "Bigger and Reorganized PalBox" to allow displaying of the new box slots  
-- Modify the "main.lua" that comes from "Bigger and Reorganized PalBox" so that  
-- - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" in "config.ini"  
-- - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount" in "config.ini"
+**How to use**
+1. Download release from releases page
+2. extract zip file and Run "inject_box_slot.exe" (if you want to run from CMD do with -h to see instructions)
+3. Select your sav file location(it will start in %LOCALAPPDATA%\Pal\Saved\SaveGames so just select your steam id folder then the game id folder(use modified date to figure out correct one))
+4. Install "Bigger and Reorganized PalBox"
+- Modify the "config.lua" that comes from ["Bigger and Reorganized PalBox"](https://www.nexusmods.com/palworld/mods/68) so that  
+- - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" 
+- - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount"
+
+**How to use from source:**
+1. Download source
+2. install python if you don't already have it
+3. install poetry into python `pip install poetry`
+4. run `poetry install` (will create virtuual env and install palworld-save-tools)
+5. `poetry shell`
+7. Run `inject_box_slots.cmd`
+8. Fill out the fields with the required data and the rest will be automated. Anything that isn't will prompt you
+9. Install a mod like previously stated ["Bigger and Reorganized PalBox"](https://www.nexusmods.com/palworld/mods/68) to allow displaying of the new box slots  
+- Modify the "config.lua" that comes from "Bigger and Reorganized PalBox" so that  
+- - "PalGameSetting.PalBoxPageNum" is the same as "boxcount"
+- - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount"
+
+**Compile into exe yourself:**
+1. Follow to use from source except instead type `poetry install --with dev`
+2. to compile exe `pyinstaller .\inject_box_slots.spec`
+3. exe and blankboxslot.json will be found in dist folder
 
 Console:
 Has support for running through console without ui if you want to do that. Just -h to figure it out. 
