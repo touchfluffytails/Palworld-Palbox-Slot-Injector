@@ -4,9 +4,9 @@ import traceback
 import os
 
 class InjectorForm:
-    def __init__(self, boxcount = 16, boxslotcount = 30, levelpath = "", savetoolspath = ""):
+    def __init__(self, boxcount = 16, boxslotcount = 30, levelpath = ""):
         self.root = tk.Tk()
-        self.settings = self.SettingsInput(self.root, boxcount, boxslotcount, levelpath, savetoolspath)
+        self.settings = self.SettingsInput(self.root, boxcount, boxslotcount, levelpath)
         self.root.mainloop()
 
     def GetBoxCount(self):
@@ -18,14 +18,11 @@ class InjectorForm:
     def GetLevelPath(self):
         return self.settings.GetLevelPath()
 
-    def GetSaveToolsPath(self):
-        return self.settings.GetSaveToolsPath()
-
     def Result(self):
             return self.settings.result
 
     class SettingsInput:
-        def __init__(self, root, boxcount = 16, boxslotcount = 30, levelpath = "", savetoolspath = ""):
+        def __init__(self, root, boxcount = 16, boxslotcount = 30, levelpath = ""):
             self.root = root
 
             self.boxcount = tk.IntVar()
@@ -37,9 +34,6 @@ class InjectorForm:
             self.levelpath = tk.StringVar()
             self.levelpath.set(levelpath)
 
-            self.savetoolspath = tk.StringVar()
-            self.savetoolspath.set(savetoolspath)
-
             self.statusText = tk.StringVar()
             self.statusText.set("")
 
@@ -49,7 +43,7 @@ class InjectorForm:
             self.ConstructForm()
 
         def ConstructForm(self):
-            self.root.geometry("450x150")
+            self.root.geometry("450x125")
 
             vcmdBoxSlotCount = (self.root.register(self.Validate_txbBoxSlotCount),  "%P", "%V")
             self.lblBoxSlotCount = tk.Label(self.root, text = "Box Slot Count:", width = 15)
@@ -63,11 +57,6 @@ class InjectorForm:
             self.lblLevelPath = tk.Label(self.root, text = "Level.sav path:", width = 15)
             self.txbLevelPath = tk.Entry(self.root, width = 50, textvariable=self.levelpath, validate="focus", validatecommand=vcmdLevelPath)
             self.btnLevelPath = tk.Button(self.root, text = "...", command=self.btnLevelPath_Click)
-
-            vcmdSaveToolsPath = (self.root.register(self.Validate_txbSaveToolsPath),  "%P", "%V")
-            self.lblSaveToolsPath = tk.Label(self.root, text = "Save-Tools path:", width = 15)
-            self.txbSaveToolsPath = tk.Entry(self.root, width = 50, textvariable=self.savetoolspath, validate="focus", validatecommand=vcmdSaveToolsPath)
-            self.btnSaveToolsPath = tk.Button(self.root, text = "...", command=self.btnSaveToolsPath_Click)
 
             self.btnOk = tk.Button(self.root, text = "OK", command=self.btnOk_Click)
             self.btnCancel = tk.Button(self.root, text = "Cancel", command = self.root.destroy)
@@ -91,16 +80,11 @@ class InjectorForm:
             self.btnLevelPath.grid(column=2, row=row)
 
             row += 1
-            self.lblSaveToolsPath.grid(column=0, row=row)
-            self.txbSaveToolsPath.grid(column=1, row=row, sticky="we")
-            self.btnSaveToolsPath.grid(column=2, row=row)
-
-            row += 1
             self.btnOk.grid(column=0, row=row)
             self.btnCancel.grid(column=1, row=row)
 
             row += 1
-            self.lblStatusbar.grid(row=row, columnspan=2, sticky="we")
+            self.lblStatusbar.grid(row=row, column=0, columnspan=3, sticky="we",pady=5, padx=(15,0))
 
         def OpenDialog(self):
             self.root.mainloop()
@@ -132,11 +116,6 @@ class InjectorForm:
             levelPath = levelFileDialog.GetPath()
             self.levelpath.set(levelPath)
 
-        def btnSaveToolsPath_Click(self):
-            savetoolsFileDialog = self.SaveToolsDialog(parent=self.root)
-            savetoolsPath = savetoolsFileDialog.GetPath()
-            self.savetoolspath.set(savetoolsPath)
-
         def ValidateAllFields(self):
             if (not self.Validate_txbBoxCount(self.boxcount.get(), "forced")):
                 return False
@@ -145,9 +124,6 @@ class InjectorForm:
                 return False
 
             if (not self.Validate_txbLevelPath(self.levelpath.get(), "forced")):
-                return False
-
-            if (not self.Validate_txbSaveToolsPath(self.savetoolspath.get(), "forced")):
                 return False
 
             return True
@@ -232,34 +208,6 @@ class InjectorForm:
 
             return True
 
-        def Validate_txbSaveToolsPath(self, P, V):
-            self.statusText.set("")
-
-            # Don't waste time validating empty field when changing focus
-            if (P == "" and V in ["focusin", "focusout"]):
-                return True
-
-            if (P == None or P == ""):
-                message = "Save-Tools path can't be blank"
-                print(message)
-                self.statusText.set(message)
-                return False
-
-            if (not os.path.exists(P)):
-                message = "Save-Tools path doesn't exist"
-                print(message)
-                self.statusText.set(message)
-                return False
-
-            valueName, valueExtension = os.path.splitext(P)
-            if (valueExtension.upper() not in [".cmd".upper(), ".py".upper()]):
-                message = "Save-Tools must end in .cmd or .py"
-                print(message)
-                self.statusText.set(message)
-                return False
-                
-            return True
-
         def GetBoxCount(self):
             return int(self.boxcount.get())
 
@@ -269,9 +217,6 @@ class InjectorForm:
         def GetLevelPath(self):
             return self.levelpath.get()
 
-        def GetSaveToolsPath(self):
-            return self.savetoolspath.get()
-
         def Result(self):
             return self.result
 
@@ -279,14 +224,6 @@ class InjectorForm:
             def __init__(self, parent):
                 validFileTypes = (("Valid files", "*.sav *.sav.json"),(".sav", "*.sav"), (".sav.json", "*.sav.json"), ("All Files", "*.*"))
                 self.path = filedialog.askopenfilename(filetypes=validFileTypes, title="Open Palworld Level.sav[.json] Save", parent=parent)
-
-            def GetPath(self):
-                return self.path
-
-        class SaveToolsDialog:
-            def __init__(self, parent):
-                validFileTypes = (("Valid files", "*.cmd"),(".cmd", "*.cmd"), ("All Files", "*.*"))
-                self.path = filedialog.askopenfilename(filetypes=validFileTypes, title="Open Palworld-Save-Tools convert.cmd", parent=parent)
 
             def GetPath(self):
                 return self.path

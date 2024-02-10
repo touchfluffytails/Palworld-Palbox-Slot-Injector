@@ -6,12 +6,13 @@ import glob
 from datetime import datetime
 import shutil
 import argparse
-import subprocess
 import sys
 import traceback
 import copy
+from palworld_save_tools.commands import convert as save_tool
 
 import injector_ui as injectorui
+
 
 CONFIG_FILENAME = "config.ini"
 BLANK_SLOT_FILENAME = "blankpalslot.json"
@@ -21,11 +22,6 @@ BACKUP_TIME_FORMAT = "%Y-%m-%d_%H.%M.%S"
 ConfigSection = "DEFAULT"
 PlayerFolder = "Players"
 OpenUi = False
-
-PythonPath = sys.executable
-if (PythonPath == None or PythonPath == "" or not os.path.exists(PythonPath)):
-    # just default to python command in this case. If this doesn't work, I'm going to assume the user has some weird setup (likely linux) and I'm not providing support
-    PythonPath = "python"
 
 def quit(reason = ""):
     '''
@@ -40,7 +36,6 @@ def main():
         prog="Palbox Slot Injector",
         description="Injects slots into existing players palbox")
     parser.add_argument("-l", "--level", metavar="Level.sav[.json]", help="Level.sav[.json] path")
-    parser.add_argument("-st", "--savetools", metavar="Save tools cmd", help="convert.cmd path")
     parser.add_argument("-bc", "--boxcount", metavar="Box Count", help="Box count. Ignored if Box slot count not also passed", type=int)
     parser.add_argument("-bsc", "--boxslotcount", metavar="Box Slot Count", help="Box slot count. Ignored if Box count not also passed", type=int)
     parser.add_argument("-ui",  action="store_true", help="Open ui popups. Doesn't prompt for values passed except if you don't pass both box count and box slot count")
@@ -51,7 +46,6 @@ def main():
     global OpenUi
     OpenUi = openUi
     levelSavePath = args.level
-    savetools = args.savetools
     passedBoxCount = args.boxcount
     passedBoxSlotCount = args.boxslotcount
     dumpPlayers = not args.dontdumpplayers
@@ -66,25 +60,15 @@ def main():
 
     if (OpenUi):
         print("Running ui mode")
-        levelSavePath, savetools, boxCount, boxSlotCount = HandleSetupUI(levelSavePath, savetools, passedBoxCount, passedBoxSlotCount)
+        levelSavePath, boxCount, boxSlotCount = HandleSetupUI(levelSavePath, passedBoxCount, passedBoxSlotCount)
     else:
         print("Running console mode")
         boxCount = passedBoxCount
         boxSlotCount = passedBoxSlotCount
 
     print("Level Save Path: {path}".format(path=levelSavePath))
-    print("Save-Tools Path: {path}".format(path=savetools))
     print("Box Count: {value}".format(value=boxCount))
     print("Box Slot Count: {value}".format(value=boxSlotCount))
-
-    savetoolsName, savetoolsExtension = os.path.splitext(savetools)
-    if (savetoolsExtension.upper() == ".cmd".upper()):
-        print("Assuming save-tools .py is same name as .cmd")
-        savetools = savetoolsName + ".py"
-    elif (savetoolsExtension.upper() != ".py".upper()):
-        print("What king of file are you passing for savetools? Needs to be the .cmd or .py file")
-        print("Passed along this for savetools: {path}".format(savetools))
-        quit()
 
     if (not os.path.exists(levelSavePath)):
         print("Level.sav[.json] doesn't exist: {path}".format(path=levelSavePath))
@@ -97,7 +81,7 @@ def main():
         print("Was passed file: {path}".format(path=levelSavePath))
         quit()
 
-    levelSavePath = HandleSaveTools(savetools, levelSavePath, dumpPlayers)
+    levelSavePath = HandleSaveTools(levelSavePath, dumpPlayers)
 
     print("Working on Level.sav.json from: {path}".format(path=levelSavePath))
 
@@ -116,7 +100,7 @@ def main():
         result = HandleYesNoConsole("Do you want to merge changes back into Level.sav made in Level.sav.json?")
     if (result):
         print("Merging changes back into Level.sav")
-        RunSaveTools(savetools, levelSavePath, False)
+        RunSaveTools(levelSavePath, False)
     else:
         print("Not merging changes back into Level.sav")
 
@@ -253,9 +237,6 @@ def ValidateArguments(args):
     if (args.level == None or args.level == ""):
         print("Running without ui, must pass level path")
         return False
-    if (args.savetools == None or args.savetools == ""):
-        print("Running without ui, must pass savetools path")
-        return False
     if (args.boxcount == None or args.boxcount == ""):
         print("Running without ui, must pass box count")
         return False
@@ -265,21 +246,19 @@ def ValidateArguments(args):
 
     return True
 
-def HandleSetupUI(levelSavePath, savetools, passedBoxCount, passedBoxSlotCount):
+def HandleSetupUI(levelSavePath, passedBoxCount, passedBoxSlotCount):
     boxCount = 16
     boxSlotCount = 30
 
     if (levelSavePath == None):
         levelSavePath = ""
-    if (savetools == None):
-        savetools = ""
     if (passedBoxCount == None):
         passedBoxCount = 16
     if (passedBoxSlotCount == None):
         passedBoxSlotCount = 30
 
 
-    injectorForm = injectorui.InjectorForm(passedBoxCount, passedBoxSlotCount, levelSavePath, savetools)
+    injectorForm = injectorui.InjectorForm(passedBoxCount, passedBoxSlotCount, levelSavePath)
 
     if (not injectorForm.Result()):
         print("User cancelled settings ui. Closing...")
@@ -287,19 +266,20 @@ def HandleSetupUI(levelSavePath, savetools, passedBoxCount, passedBoxSlotCount):
         raise Exception("Cancelled settings ui")
 
     levelSavePath = injectorForm.GetLevelPath()
-    savetools = injectorForm.GetSaveToolsPath()
     boxCount = injectorForm.GetBoxCount()
     boxSlotCount = injectorForm.GetBoxSlotCount()
 
-    return levelSavePath, savetools, boxCount, boxSlotCount
+    return levelSavePath, boxCount, boxSlotCount
 
-def RunSaveTools(savetools, savePath, validateJsonExistence = True):
+def RunSaveTools(savePath, validateJsonExistence = True):
     saveName, saveExtension = os.path.splitext(savePath)
+    is_JSON = False
 
     returnPath = ""
     if (saveExtension.upper() == ".sav".upper()):
         returnPath = savePath + ".json"
     elif (saveExtension.upper() == ".json".upper()):
+        is_JSON = True
         saveName, saveExtension = os.path.splitext(saveName)
         if (saveExtension.upper() != ".sav".upper()):
             print("Your json file doesn't have a .sav suffix. What are you doing?")
@@ -322,12 +302,13 @@ def RunSaveTools(savetools, savePath, validateJsonExistence = True):
 
     print("Running save-tools on {path}".format(path=savePath))
     print("")
-    result = subprocess.run([PythonPath, savetools, savePath, "--force", "--minify-json"])
+
+    if is_JSON:
+        result = save_tool.convert_json_to_sav(savePath,returnPath,True)
+    else:
+        result = save_tool.convert_sav_to_json(savePath,returnPath,True,True)
+    print("Result: ",result)
     print("")
-    if (result.returncode == 1):
-        print("Error while running save-tools on {path}".format(path=savePath))
-        print("")
-        raise Exception("Failure running save-tools")
 
     return returnPath
 
@@ -340,10 +321,10 @@ def HandleYesNoConsole(message):
     else:
         return False
 
-def DumpLevelSave(savetools, levelSavePath):
-    return RunSaveTools(savetools, levelSavePath)
+def DumpLevelSave(levelSavePath):
+    return RunSaveTools(levelSavePath)
 
-def DumpPlayerSaves(savetools, levelSavePath):
+def DumpPlayerSaves(levelSavePath):
     saveFolder = os.path.split(levelSavePath)[0]
     playersFolder = os.path.join(saveFolder, PlayerFolder)
 
@@ -353,18 +334,18 @@ def DumpPlayerSaves(savetools, levelSavePath):
         playerSaves.append(file)
 
     for save in playerSaves:
-        RunSaveTools(savetools, save, False)
+        RunSaveTools(save, False)
 
-def HandleSaveTools(savetools, levelSavePath, dumpPlayers):
+def HandleSaveTools(levelSavePath, dumpPlayers):
     levelName, levelExtension = os.path.splitext(levelSavePath)
     savePath = levelSavePath
     if (levelExtension.upper() == ".sav".upper()):
         print("Dumping level.sav...")
-        savePath = DumpLevelSave(savetools, levelSavePath)
+        savePath = DumpLevelSave(levelSavePath)
 
     if (dumpPlayers):
         print("Dumping player saves...")
-        DumpPlayerSaves(savetools, levelSavePath)
+        DumpPlayerSaves(levelSavePath)
 
     return savePath
 
