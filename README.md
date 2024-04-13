@@ -1,29 +1,52 @@
 # Palworld-Palbox-Slot-Injector
 Injects slots into existing players palboxes. Allows you to increase the amount of possible slots you can have in the boxes. It does not, however, allow you to access those slots without a mod.
 
-Works alongside a mod like: https://www.nexusmods.com/palworld/mods/68  
-You can edit the main.lua script this mod comes with to edit the box count and slot sizes  
+Works alongside a mod like: ["Bigger and Reorganized PalBox"](https://www.nexusmods.com/palworld/mods/68)  
+You can edit the config.lua script this mod comes with to edit the box count and slot sizes  
+
+["Nexusmods page"](https://www.nexusmods.com/palworld/mods/263)
 
 How this works is under the how to use and notes  
 
 **Tools needed:**  
-Python installed  
-Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/  
+Python >= 3.10 installed  
 
 **How to use**
 1. Download release from releases page
-2. extract zip file and Run "inject_box_slot.exe" (if you want to run from CMD do with -h to see instructions)
+2. Extract zip file and Run "inject_box_slot.exe" (if you want to run from CMD do with -h to see instructions)
 3. Select your sav file location(it will start in %LOCALAPPDATA%\Pal\Saved\SaveGames so just select your steam id folder then the game id folder(use modified date to figure out correct one))
 4. Install "Bigger and Reorganized PalBox"
 - Modify the "config.lua" that comes from ["Bigger and Reorganized PalBox"](https://www.nexusmods.com/palworld/mods/68) so that  
 - - "PalGameSetting.PalBoxPageNum" is the same as "boxcount" 
 - - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount"
 
-**How to use from source:**
+**How to use from source with venv - Windows:**  
+Two  options here, run through command line or run `inject_box_slots_venv.cmd` for auto UI.  
+To run directly through cmd:
+1. Download source  
+2. Install python3 if you don't already have it  
+3. Run `setup_venv.bat`
+4. Run `.venv\Scripts\activate.bat` to start in venv environment
+5. Call `inject_box_slots.py` with python with required arguments
+
+**How to use from source with venv - Linux:**  
+1. Have python3 installed
+2. Have python venv installed
+3. If UI is desired, have tkinker installed through distro required method
+4. 
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+5. Run through venv environment
+
+**How to use from source with poetry:**
 1. Download source
-2. install python if you don't already have it
-3. install poetry into python `pip install poetry`
-4. run `poetry install` (will create virtuual env and install palworld-save-tools)
+2. Install python if you don't already have it
+3. Install poetry into python `pip install poetry`
+4. Run `poetry install` (will create virtuual env and install palworld-save-tools)
 5. `poetry shell`
 7. Run `inject_box_slots.cmd`
 8. Fill out the fields with the required data and the rest will be automated. Anything that isn't will prompt you
@@ -33,9 +56,14 @@ Palworld-Save-Tools: https://github.com/cheahjs/palworld-save-tools/
 - - "PalGameSetting.PalBoxSlotNumInPage" is the same as "boxslotcount"
 
 **Compile into exe yourself:**
-1. Follow to use from source except instead type `poetry install --with dev`
-2. to compile exe `pyinstaller .\inject_box_slots.spec`
-3. exe and blankboxslot.json will be found in dist folder
+1. Run `compile_exe.bat`
+2. exe and blankboxslot.json will be found in dist folder  
+
+or  
+1. Follow to use from source with poetry except instead type `poetry install --with dev`
+2. `poetry shell`
+3. To compile exe `pyinstaller .\inject_box_slots.spec`
+4. exe and blankboxslot.json will be found in dist folder
 
 Console:
 Has support for running through console without ui if you want to do that. Just -h to figure it out. 
