@@ -1,6 +1,10 @@
 @echo off
 
 cd /D "%~dp0"
+
+call cleanup_compile.bat
+call cleanup_venv.bat
+
 cd ..
 
 if EXIST Palworld-Palbox-Slot-Injector-Release rmdir /S /Q "%~dp0..\Palworld-Palbox-Slot-Injector-Release"
