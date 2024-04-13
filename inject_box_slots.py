@@ -11,8 +11,12 @@ import traceback
 import copy
 from palworld_save_tools.commands import convert as save_tool
 
-import injector_ui as injectorui
+TkinterInstalled = True
 
+try:
+    import injector_ui as injectorui
+except ModuleNotFoundError:
+    TkinterInstalled = False
 
 CONFIG_FILENAME = "config.ini"
 BLANK_SLOT_FILENAME = "blankpalslot.json"
@@ -32,8 +36,11 @@ class InjectBoxSlots:
     def __init__(self):
         self.OpenUi = False
         self.application_path = ""
-        appdata_dir = os.getenv('LOCALAPPDATA')
-        self.save_path = os.path.join(appdata_dir, "Pal\\Saved\\SaveGames")
+        if (sys.platform == "win32"):
+            appdata_dir = os.getenv('LOCALAPPDATA')
+            self.save_path = os.path.join(appdata_dir, "Pal", "Saved", "SaveGames")
+        else:
+            self.save_path = ""
 
     def main(self):
         print("")
@@ -62,6 +69,9 @@ class InjectBoxSlots:
             quit("Exiting, must pass all required arguments")
 
         if (self.OpenUi):
+            if (not TkinterInstalled):
+                quit("Can't run ui without tkinter installed")
+
             print("Running ui mode")
             levelSavePath, boxCount, boxSlotCount = self.HandleSetupUI(levelSavePath, passedBoxCount, passedBoxSlotCount)
         else:
