@@ -9,7 +9,7 @@ You can edit the config.lua script this mod comes with to edit the box count and
 How this works is under the how to use and notes  
 
 **Tools needed:**  
-Python >= 3.10 installed  
+Python >= 3.10 installed if running from source  
 
 **How to use**
 1. Download release from releases page
@@ -71,12 +71,7 @@ Has support for running through console without ui if you want to do that. Just 
 It will automatically read player .sav.json's in the Players folder to find their palbox guid and inject box slots to the required amount  
 
 **Dedicated Server**  
-At the time of writing this, this appears to be able to be ran on a dedicated server but I haven't done it myself so only limited knowledge on the process.  
-You can inject mods into a dedicated server with:  
-https://github.com/N00byKing/PalWorld-ServerInjector  
-With this installed, the most recent mods by "yakuzadeso" on NexusMods includes a "ue4ss signatures" archive. Replacing the server injector with these updated signatures appears to make it work.  
-https://www.nexusmods.com/palworld/users/63907421?tab=user+files  
-If Palworld updates this may prevent you from running dedicated with mods and thus not being able to use the saves changes this makes. This could potentially break the save if you run without the mods so be aware of this.  
+I can't update this enough every time the game updates. Check if ["Bigger and Reorganized PalBox"](https://www.nexusmods.com/palworld/mods/68) is linking a fresh guide on modding dedicated. If not, you'll need to find one.
 
 **Notes:**  
 I am unaware of what possible issues this could cause so use with caution and awareness this may break something and be irreversible. It already backups level.sav.json but be sure to do it yourself.  
