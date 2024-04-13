@@ -1,0 +1,1 @@
+palworld_save_tools==0.22.0
